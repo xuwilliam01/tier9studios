@@ -3,142 +3,174 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Auto Battles Online &mdash; Tier 9 Game Studios</title>
-    <meta name="description" content="Auto Battles Online — Idle RPG by Tier 9 Game Studios. Download on the App Store or Google Play, and join our Discord community."/>
-    <meta property="og:title" content="Auto Battles Online — Idle RPG"/>
-    <meta property="og:description" content="Download Auto Battles Online on the App Store or Google Play, and join our Discord community."/>
+    <title>Tier 9 Game Studios &mdash; Auto Battles Online</title>
+    <meta name="description" content="Tier 9 Game Studios — makers of Auto Battles Online, the idle RPG. Download on the App Store or Google Play, join our Discord, or come work with us."/>
+    <meta property="og:title" content="Tier 9 Game Studios"/>
+    <meta property="og:description" content="Makers of Auto Battles Online — Idle RPG. Download on the App Store or Google Play, and join our Discord community."/>
     <meta property="og:type" content="website"/>
     <meta property="og:url" content="https://www.tier9studios.com/"/>
+    <meta property="og:image" content="https://www.tier9studios.com/assets/bg.jpg"/>
+    <meta name="theme-color" content="#8ed0ef"/>
+    <link rel="icon" type="image/png" href="/assets/logo.png"/>
     <style>
         :root {
-            --bg: #faf9f5;
-            --panel: #ffffff;
-            --panel-2: #f0eee6;
-            --border: #e3e0d4;
-            --ink: #3d3929;
-            --ink-dim: #6b6657;
-            --accent: #cc785c;
-            --accent-2: #d97757;
-            --accent-deep: #a8553d;
+            --ink: #1a1c23;
+            --ink-dim: #50545f;
+            --accent: #e8434f;
+            --blurple: #5865f2;
         }
         * { box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
             margin: 0;
-            padding: 0;
-            background: var(--bg);
+            background: #8ed0ef url("/assets/bg.jpg") center / cover no-repeat;
             color: var(--ink);
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
         main {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 3em 1.5em;
+            padding: 2.5rem 1.25rem;
         }
-        .card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 3em 2.5em;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 2px 12px rgba(61, 57, 41, 0.06);
-        }
-        .studio {
-            font-size: 0.85em;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--ink-dim);
-            margin: 0 0 0.75em;
-        }
-        h1 {
-            font-size: 1.9em;
-            line-height: 1.2;
-            margin: 0 0 0.35em;
-        }
-        .tagline {
-            color: var(--ink-dim);
-            margin: 0 0 2em;
-        }
-        .buttons {
+        .glass {
             display: flex;
             flex-direction: column;
-            gap: 0.85em;
-        }
-        .btn {
-            display: flex;
             align-items: center;
+            text-align: center;
+            width: 100%;
+            max-width: 34rem;
+            padding: 3rem 2.5rem 2.5rem;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.66);
+            -webkit-backdrop-filter: blur(16px) saturate(1.3);
+            backdrop-filter: blur(16px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            box-shadow: 0 16px 48px rgba(10, 45, 80, 0.22);
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .glass { background: rgba(255, 255, 255, 0.93); }
+        }
+        .logo {
+            width: min(300px, 68vw);
+            height: auto;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            margin: 0 0 0.4rem;
+            font-size: clamp(1.6rem, 5vw, 2.1rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+        .tagline {
+            margin: 0 0 2rem;
+            color: var(--ink-dim);
+            font-size: 1.02rem;
+            max-width: 28rem;
+        }
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            gap: 0.6em;
-            padding: 0.9em 1.4em;
-            border-radius: 10px;
-            font-size: 1.05em;
-            font-weight: bold;
-            text-decoration: none;
-            border: 1px solid var(--border);
-            background: var(--panel-2);
-            color: var(--ink);
-            transition: background 0.15s, border-color 0.15s;
+            align-items: center;
+            gap: 0.75rem;
         }
-        .btn:hover {
-            background: var(--border);
-        }
-        .btn.discord {
-            background: var(--accent);
-            border-color: var(--accent);
+        .badges img { display: block; height: 50px; width: auto; }
+        .badge-discord {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            height: 50px;
+            padding: 0 1.1rem;
+            border-radius: 8px;
+            background: var(--blurple);
             color: #ffffff;
+            text-decoration: none;
         }
-        .btn.discord:hover {
-            background: var(--accent-deep);
-            border-color: var(--accent-deep);
-        }
-        .btn svg {
-            width: 22px;
-            height: 22px;
+        .badge-discord svg {
+            width: 26px;
+            height: 26px;
             flex: none;
             fill: currentColor;
         }
-        footer {
-            text-align: center;
-            padding: 1.5em;
-            font-size: 0.85em;
+        .badge-discord .lines {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.15;
+        }
+        .badge-discord .small {
+            font-size: 0.6rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .badge-discord .big {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .hiring {
+            margin-top: 2rem;
             color: var(--ink-dim);
+            font-size: 0.95rem;
+            text-decoration: none;
+        }
+        .hiring:hover { color: var(--accent); }
+        footer {
+            padding: 0 1.5rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.3rem 1.25rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 0 1px 6px rgba(5, 35, 65, 0.45);
         }
         footer a {
-            color: var(--ink-dim);
+            color: rgba(255, 255, 255, 0.92);
+            text-decoration: none;
+        }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 480px) {
+            .glass { padding: 2.25rem 1.25rem 2rem; }
+            .badges img, .badge-discord { height: 44px; }
+            .badge-discord .big { font-size: 1.05rem; }
         }
     </style>
 </head>
 <body>
     <main>
-        <div class="card">
-            <p class="studio">Tier 9 Game Studios</p>
+        <div class="glass">
+            <img class="logo" src="/assets/logo.png" alt="Tier 9 Game Studios" width="900" height="648"/>
             <h1>Auto Battles Online</h1>
-            <p class="tagline">Idle RPG &mdash; battle, loot, and level up, even while you're away.</p>
-            <div class="buttons">
-                <a class="btn" href="https://apps.apple.com/sa/app/auto-battles-online-idle-rpg/id1536993948">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.05 12.54c-.03-2.89 2.36-4.28 2.47-4.35-1.35-1.97-3.44-2.24-4.18-2.27-1.78-.18-3.47 1.05-4.37 1.05-.9 0-2.29-1.02-3.77-1-1.94.03-3.72 1.13-4.72 2.86-2.01 3.49-.51 8.66 1.45 11.49.96 1.39 2.1 2.94 3.6 2.89 1.44-.06 1.99-.93 3.73-.93 1.74 0 2.23.93 3.76.9 1.56-.03 2.54-1.41 3.49-2.8 1.1-1.61 1.55-3.17 1.57-3.25-.03-.02-3.01-1.16-3.03-4.59zM14.16 4.05c.8-.96 1.33-2.3 1.19-3.64-1.14.05-2.53.76-3.35 1.72-.74.85-1.38 2.21-1.21 3.52 1.28.1 2.58-.65 3.37-1.6z"/></svg>
-                    Download on the App&nbsp;Store
+            <p class="tagline">An idle RPG. Battle, loot, and level up &mdash; even while you&rsquo;re away.</p>
+            <div class="badges">
+                <a href="https://apps.apple.com/sa/app/auto-battles-online-idle-rpg/id1536993948">
+                    <img src="/assets/app-store-badge.svg" alt="Download on the App Store"/>
                 </a>
-                <a class="btn" href="https://play.google.com/store/apps/details?id=com.william.mobilegame&amp;hl=en_US">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.61 1.81c-.36.38-.57.97-.57 1.73v16.92c0 .76.21 1.35.57 1.73l.09.08 9.48-9.48v-.22L3.7 1.73l-.09.08zm12.74 12.66l-3.17-3.17v-.22l3.17-3.17.07.04 3.75 2.13c1.07.61 1.07 1.61 0 2.22l-3.75 2.13-.07.04zm-.9.52L12.2 11.74 3.61 21.99c.35.37.94.42 1.6.05l10.24-5.05zM3.61 1.81l8.59 10.25 3.24-3.25L5.21 3.76c-.66-.37-1.25-.32-1.6.05z"/></svg>
-                    Get it on Google&nbsp;Play
+                <a href="https://play.google.com/store/apps/details?id=com.william.mobilegame&amp;hl=en_US">
+                    <img src="/assets/google-play-badge.png" alt="Get it on Google Play"/>
                 </a>
-                <a class="btn discord" href="https://discord.gg/pKbKFXm2xz">
+                <a class="badge-discord" href="https://discord.gg/pKbKFXm2xz">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.87-.6 1.25a18.3 18.3 0 0 0-5.49 0 12.6 12.6 0 0 0-.61-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.04.03C.53 9.05-.32 13.58.1 18.06c0 .02.01.04.03.05a19.9 19.9 0 0 0 5.99 3.03.08.08 0 0 0 .09-.03c.46-.63.87-1.3 1.23-2a.08.08 0 0 0-.04-.11 13 13 0 0 1-1.87-.9.08.08 0 0 1-.01-.12c.13-.1.25-.19.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.25.2.37.29a.08.08 0 0 1-.01.13c-.6.35-1.22.64-1.87.89a.08.08 0 0 0-.04.11c.36.7.78 1.37 1.23 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6.01-3.03.08.08 0 0 0 .03-.05c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03zM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42z"/></svg>
-                    Join our Discord
+                    <span class="lines"><span class="small">Join us on</span><span class="big">Discord</span></span>
                 </a>
             </div>
+            <a class="hiring" href="https://tier-9-game-studios-ltd.breezy.hr/">We&rsquo;re hiring &rarr;</a>
         </div>
     </main>
     <footer>
-        <p>&copy; Tier 9 Game Studios Ltd. &bull; <a href="/privacy/">Privacy Policy</a></p>
+        <span>&copy; Tier 9 Game Studios Ltd.</span>
+        <a href="/privacy/">Privacy</a>
+        <a href="https://tier-9-game-studios-ltd.breezy.hr/">Careers</a>
     </footer>
 </body>
 </html>
