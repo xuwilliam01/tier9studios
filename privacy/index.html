@@ -7,15 +7,27 @@
     <meta name="description" content="Privacy policy for Auto Battles Online and the Tier 9 Game Studios Discord community."/>
     <style>
         :root {
-            --bg: #faf9f5;
+            --bg: #f6f7f9;
             --panel: #ffffff;
-            --panel-2: #f0eee6;
-            --border: #e3e0d4;
-            --ink: #3d3929;
-            --ink-dim: #6b6657;
-            --accent: #cc785c;
-            --accent-2: #d97757;
-            --accent-deep: #a8553d;
+            --panel-2: #eef0f3;
+            --border: #e6e7eb;
+            --ink: #1a1c23;
+            --ink-dim: #6f7380;
+            --accent: #e8434f;
+            --accent-2: #e8434f;
+            --accent-deep: #c9333f;
+        }
+        @font-face {
+            font-family: "Ioskeley Mono";
+            src: url("/assets/fonts/IoskeleyMonoTerm-Regular.woff2") format("woff2");
+            font-weight: 400;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: "Ioskeley Mono";
+            src: url("/assets/fonts/IoskeleyMonoTerm-SemiBold.woff2") format("woff2");
+            font-weight: 600;
+            font-display: swap;
         }
         * { box-sizing: border-box; }
         body {
@@ -23,7 +35,7 @@
             padding: 0;
             background: var(--bg);
             color: var(--ink);
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
             -webkit-font-smoothing: antialiased;
         }
         .wrap {
@@ -32,8 +44,9 @@
             padding: 2.5em 1.25em 1em;
         }
         .studio {
+            font-family: "Ioskeley Mono", ui-monospace, monospace;
             font-size: 0.85em;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             margin: 0 0 1.5em;
         }
@@ -43,7 +56,9 @@
         }
         .studio a:hover { color: var(--accent-deep); }
         h1 {
-            font-size: 1.9em;
+            font-family: "Ioskeley Mono", ui-monospace, monospace;
+            font-weight: 600;
+            font-size: 1.8em;
             margin: 0 0 0.25em;
         }
         .subtitle {
@@ -55,16 +70,20 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 2.75em 3em;
-            box-shadow: 0 2px 12px rgba(61, 57, 41, 0.06);
+            box-shadow: 0 2px 12px rgba(26, 28, 35, 0.06);
         }
         #content h3 {
-            font-size: 1.15em;
+            font-family: "Ioskeley Mono", ui-monospace, monospace;
+            font-weight: 600;
+            font-size: 1.1em;
             margin-top: 2.2em;
             padding-bottom: 0.4em;
             border-bottom: 1px solid var(--border);
         }
         #content h4 {
-            font-size: 1em;
+            font-family: "Ioskeley Mono", ui-monospace, monospace;
+            font-weight: 600;
+            font-size: 0.95em;
             margin-top: 1.6em;
         }
         #content p, #content li {

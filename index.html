@@ -19,11 +19,23 @@
             --accent: #e8434f;
             --blurple: #5865f2;
         }
+        @font-face {
+            font-family: "Ioskeley Mono";
+            src: url("/assets/fonts/IoskeleyMonoTerm-Regular.woff2") format("woff2");
+            font-weight: 400;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: "Ioskeley Mono";
+            src: url("/assets/fonts/IoskeleyMonoTerm-SemiBold.woff2") format("woff2");
+            font-weight: 600;
+            font-display: swap;
+        }
         * { box-sizing: border-box; }
         html, body { height: 100%; }
         body {
             margin: 0;
-            background: #8ed0ef url("/assets/bg.jpg") center / cover no-repeat;
+            background: #8ed0ef;
             color: var(--ink);
             font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
             font-size: 16px;
@@ -33,6 +45,17 @@
             flex-direction: column;
             min-height: 100vh;
         }
+        .bg {
+            position: fixed;
+            inset: -24px; /* oversize so the blur doesn't show bright edges */
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            filter: blur(6px);
+            opacity: 0;
+            transition: opacity 2.5s ease-in-out;
+        }
+        .bg.active { opacity: 1; }
         main {
             flex: 1;
             display: flex;
@@ -65,10 +88,11 @@
         }
         h1 {
             margin: 0 0 0.4rem;
-            font-size: clamp(1.6rem, 5vw, 2.1rem);
-            font-weight: 700;
+            font-family: "Ioskeley Mono", ui-monospace, monospace;
+            font-size: clamp(1.5rem, 4.5vw, 1.9rem);
+            font-weight: 600;
             line-height: 1.15;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
         }
         .tagline {
             margin: 0 0 2rem;
@@ -119,11 +143,19 @@
         }
         .hiring {
             margin-top: 2rem;
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            border: 1px solid var(--ink-dim);
+            border-radius: 999px;
             color: var(--ink-dim);
-            font-size: 0.95rem;
+            font-family: "Ioskeley Mono", ui-monospace, monospace;
+            font-size: 0.9rem;
             text-decoration: none;
         }
-        .hiring:hover { color: var(--accent); }
+        .hiring:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
         footer {
             padding: 0 1.5rem 1.5rem;
             display: flex;
@@ -147,6 +179,9 @@
     </style>
 </head>
 <body>
+    <div class="bg active" style="background-image: url('/assets/bg.jpg')"></div>
+    <div class="bg" style="background-image: url('/assets/bg-arena.jpg')"></div>
+    <div class="bg" style="background-image: url('/assets/bg-dungeon.jpg')"></div>
     <main>
         <div class="glass">
             <img class="logo" src="/assets/logo.png" alt="Tier 9 Game Studios" width="900" height="648"/>
@@ -164,7 +199,7 @@
                     <span class="lines"><span class="small">Join us on</span><span class="big">Discord</span></span>
                 </a>
             </div>
-            <a class="hiring" href="https://tier-9-game-studios-ltd.breezy.hr/">We&rsquo;re hiring &rarr;</a>
+            <a class="hiring" href="https://tier-9-game-studios-ltd.breezy.hr/">We&rsquo;re hiring!</a>
         </div>
     </main>
     <footer>
@@ -172,5 +207,22 @@
         <a href="/privacy/">Privacy</a>
         <a href="https://tier-9-game-studios-ltd.breezy.hr/">Careers</a>
     </footer>
+    <script>
+        // Slow crossfade between background artworks. Static for users who
+        // prefer reduced motion.
+        (function () {
+            var layers = document.querySelectorAll(".bg");
+            if (layers.length < 2) return;
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            var i = 0;
+            setInterval(function () {
+                var prev = layers[i];
+                i = (i + 1) % layers.length;
+                layers[i].classList.add("active");
+                // Drop the old layer only after the new one is fully opaque.
+                setTimeout(function () { prev.classList.remove("active"); }, 2600);
+            }, 9000);
+        })();
+    </script>
 </body>
 </html>
