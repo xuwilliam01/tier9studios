@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Battles Online - Tier 9 Game Studios Ltd.</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const package_name = "com.william.mobilegame";
+            const play_store_url = `https://play.google.com/store/apps/details?id=${package_name}`;
+            const app_store_url = "https://apps.apple.com/ca/app/auto-battles-online-idle-pvp/id1536993948";
+
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(userAgent)) {
+                const appLink = `market://details?id=${package_name}`;
+                window.location.href = appLink;
+
+                // Fallback
+                setTimeout(function() {
+                    window.location.href = play_store_url;
+                }, 2000);
+
+            }
+            else if (/iPad|iPhone|iPod/.test(userAgent)) {
+                // Fallback
+                setTimeout(function() {
+                    window.location.href = app_store_url;
+                }, 2000);
+            } else {
+                window.location.href = play_store_url;
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Please wait! Redirecting to Auto Battles Online...</h1>
+    <p>If the app does not open, you will be redirected to the Play Store.</p>
+</body>
+</html>

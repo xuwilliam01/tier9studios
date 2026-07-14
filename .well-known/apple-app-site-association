@@ -1,0 +1,15 @@
+{
+  "applinks": {
+      "details": [
+           {
+             "appIDs": [ "Y7562A93N5.com.tier9.abo" ],
+             "components": [
+               {
+                  "/": "/abo/*",
+                  "comment": "Matches any URL with a path that starts with /abo/."
+               }
+             ]
+           }
+       ]
+   }
+}
