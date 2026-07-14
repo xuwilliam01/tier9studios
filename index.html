@@ -15,7 +15,7 @@
     <style>
         :root {
             --ink: #1a1c23;
-            --ink-dim: #50545f;
+            --ink-dim: #3d414c;
             --accent: #e8434f;
             --blurple: #5865f2;
         }
@@ -44,16 +44,25 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            min-height: 100dvh;
         }
         .bg {
             position: fixed;
             inset: -24px; /* oversize so the blur doesn't show bright edges */
             z-index: -1;
+            background-image: var(--bg-image);
             background-size: cover;
             background-position: center;
             filter: blur(6px);
             opacity: 0;
             transition: opacity 2.5s ease-in-out;
+        }
+        .bg::after {
+            content: "";
+            position: absolute;
+            inset: 24px;
+            background: var(--bg-image) center / 140% auto no-repeat;
+            opacity: 0;
         }
         .bg.active { opacity: 1; }
         main {
@@ -98,6 +107,7 @@
             margin: 0 0 2rem;
             color: var(--ink-dim);
             font-size: 1.02rem;
+            font-weight: 500;
             max-width: 28rem;
         }
         .badges {
@@ -107,36 +117,38 @@
             align-items: center;
             gap: 0.75rem;
         }
-        .badges img { display: block; height: 50px; width: auto; }
-        .badge-discord {
+        .badge {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.6rem;
+            width: 12rem;
             height: 50px;
-            padding: 0 1.1rem;
             border-radius: 8px;
-            background: var(--blurple);
+            border: 1px solid rgba(255, 255, 255, 0.35);
             color: #ffffff;
             text-decoration: none;
         }
-        .badge-discord svg {
+        .badge-store { background: #000000; }
+        .badge-discord { background: var(--blurple); }
+        .badge svg {
             width: 26px;
             height: 26px;
             flex: none;
             fill: currentColor;
         }
-        .badge-discord .lines {
+        .badge .lines {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             line-height: 1.15;
         }
-        .badge-discord .small {
+        .badge .small {
             font-size: 0.6rem;
             letter-spacing: 0.04em;
             text-transform: uppercase;
         }
-        .badge-discord .big {
+        .badge .big {
             font-size: 1.15rem;
             font-weight: 600;
             letter-spacing: -0.01em;
@@ -150,6 +162,7 @@
             color: var(--ink-dim);
             font-family: "Ioskeley Mono", ui-monospace, monospace;
             font-size: 0.9rem;
+            font-weight: 600;
             text-decoration: none;
         }
         .hiring:hover {
@@ -172,29 +185,117 @@
         }
         footer a:hover { text-decoration: underline; }
         @media (max-width: 480px) {
-            .glass { padding: 2.25rem 1.25rem 2rem; }
-            .badges img, .badge-discord { height: 44px; }
-            .badge-discord .big { font-size: 1.05rem; }
+            .badge { height: 42px; }
+            .badge .big { font-size: 1rem; }
+        }
+        @media (max-aspect-ratio: 3 / 4) {
+            .bg::after { opacity: 0.34; }
+            main { padding: clamp(1rem, 3.5vh, 2rem) 0; }
+            .glass {
+                width: min(84vw, 30rem);
+                padding: clamp(1.4rem, 3.5vh, 2.25rem) clamp(0.9rem, 4vw, 1.5rem) clamp(1.2rem, 3vh, 1.75rem);
+                border-radius: clamp(16px, 5vw, 22px);
+            }
+            .logo {
+                width: clamp(10rem, 55vw, 14rem);
+                margin-bottom: clamp(1rem, 2.5vh, 1.5rem);
+            }
+            h1 { font-size: clamp(1.3rem, 5.5vw, 1.65rem); }
+            .tagline {
+                margin-bottom: clamp(1.1rem, 3vh, 1.5rem);
+                font-size: clamp(0.9rem, 3.8vw, 0.98rem);
+            }
+            .badges {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                width: 100%;
+                gap: 0.55rem;
+            }
+            .badge {
+                width: 100%;
+                height: clamp(38px, 10.5vw, 44px);
+                gap: 0.4rem;
+            }
+            .badge-discord {
+                grid-column: 1 / -1;
+                justify-self: center;
+                width: calc(50% - 0.275rem);
+            }
+            .badge svg { width: 22px; height: 22px; }
+            .badge .small { font-size: 0.52rem; }
+            .badge .big { font-size: 0.95rem; }
+            .hiring {
+                margin-top: clamp(1.1rem, 3vh, 1.5rem);
+                font-size: 0.84rem;
+            }
+            footer {
+                padding: 0 1rem max(1rem, env(safe-area-inset-bottom));
+                font-size: 0.8rem;
+            }
+        }
+        @media (max-width: 350px) and (max-aspect-ratio: 3 / 4) {
+            .glass { width: 90vw; }
+            .badges {
+                grid-template-columns: minmax(0, 10rem);
+                justify-content: center;
+            }
+            .badge-discord {
+                grid-column: auto;
+                width: 100%;
+            }
+        }
+        @media (max-height: 600px) and (min-aspect-ratio: 4 / 3) {
+            main { padding: 0.75rem 1rem; }
+            .glass { max-width: 34rem; padding: 1rem 1.5rem 0.9rem; }
+            .logo {
+                width: min(150px, 22vw);
+                margin-bottom: 0.5rem;
+            }
+            h1 { font-size: 1.25rem; }
+            .tagline {
+                margin-bottom: 0.75rem;
+                font-size: 0.85rem;
+            }
+            .badges { gap: 0.5rem; }
+            .badge {
+                width: 9.5rem;
+                height: 36px;
+                gap: 0.4rem;
+            }
+            .badge svg { width: 21px; height: 21px; }
+            .badge .small { font-size: 0.5rem; }
+            .badge .big { font-size: 0.9rem; }
+            .hiring {
+                margin-top: 0.75rem;
+                padding: 0.2rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            footer {
+                padding-bottom: 0.5rem;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="bg active" style="background-image: url('/assets/bg.jpg')"></div>
-    <div class="bg" style="background-image: url('/assets/bg-arena.jpg')"></div>
-    <div class="bg" style="background-image: url('/assets/bg-dungeon.jpg')"></div>
+    <div class="bg active" style="--bg-image: url('/assets/bg.jpg')"></div>
+    <div class="bg" style="--bg-image: url('/assets/bg-arena.jpg')"></div>
+    <div class="bg" style="--bg-image: url('/assets/bg-dungeon.jpg')"></div>
     <main>
         <div class="glass">
             <img class="logo" src="/assets/logo.png" alt="Tier 9 Game Studios" width="900" height="648"/>
             <h1>Auto Battles Online</h1>
             <p class="tagline">An idle RPG. Battle, loot, and level up &mdash; even while you&rsquo;re away.</p>
             <div class="badges">
-                <a href="https://apps.apple.com/sa/app/auto-battles-online-idle-rpg/id1536993948">
-                    <img src="/assets/app-store-badge.svg" alt="Download on the App Store"/>
+                <a class="badge badge-store" href="https://apps.apple.com/sa/app/auto-battles-online-idle-rpg/id1536993948">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+                    <span class="lines"><span class="small">Download on the</span><span class="big">App Store</span></span>
                 </a>
-                <a href="https://play.google.com/store/apps/details?id=com.william.mobilegame&amp;hl=en_US">
-                    <img src="/assets/google-play-badge.png" alt="Get it on Google Play"/>
+                <a class="badge badge-store" href="https://play.google.com/store/apps/details?id=com.william.mobilegame&amp;hl=en_US">
+                    <svg viewBox="30 336.7 120.9 129.2" aria-hidden="true"><path fill="#ffd400" d="M119.2,421.2c15.3-8.4,27-14.8,28-15.3c3.2-1.7,6.5-6.2,0-9.7c-2.1-1.1-13.4-7.3-28-15.3l-20.1,20.2L119.2,421.2z"/><path fill="#ff3333" d="M99.1,401.1l-64.2,64.7c1.5,0.2,3.2-0.2,5.2-1.3c4.2-2.3,48.8-26.7,79.1-43.3L99.1,401.1L99.1,401.1z"/><path fill="#48ff48" d="M99.1,401.1l20.1-20.2c0,0-74.6-40.7-79.1-43.1c-1.7-1-3.6-1.3-5.3-1L99.1,401.1z"/><path fill="#3bccff" d="M99.1,401.1l-64.3-64.3c-2.6,0.6-4.8,2.9-4.8,7.6c0,7.5,0,107.5,0,113.8c0,4.3,1.7,7.4,4.9,7.7L99.1,401.1z"/></svg>
+                    <span class="lines"><span class="small">Get it on</span><span class="big">Google Play</span></span>
                 </a>
-                <a class="badge-discord" href="https://discord.gg/pKbKFXm2xz">
+                <a class="badge badge-discord" href="https://discord.gg/pKbKFXm2xz">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.87-.6 1.25a18.3 18.3 0 0 0-5.49 0 12.6 12.6 0 0 0-.61-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.04.03C.53 9.05-.32 13.58.1 18.06c0 .02.01.04.03.05a19.9 19.9 0 0 0 5.99 3.03.08.08 0 0 0 .09-.03c.46-.63.87-1.3 1.23-2a.08.08 0 0 0-.04-.11 13 13 0 0 1-1.87-.9.08.08 0 0 1-.01-.12c.13-.1.25-.19.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.25.2.37.29a.08.08 0 0 1-.01.13c-.6.35-1.22.64-1.87.89a.08.08 0 0 0-.04.11c.36.7.78 1.37 1.23 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6.01-3.03.08.08 0 0 0 .03-.05c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03zM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42z"/></svg>
                     <span class="lines"><span class="small">Join us on</span><span class="big">Discord</span></span>
                 </a>
