@@ -221,6 +221,8 @@
                 display: grid;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 width: 100%;
+                /* Cap at two badge widths + gap so badges never stretch wider than designed. */
+                max-width: calc(20.5rem + 0.55rem);
                 gap: 0.55rem;
             }
             .badge {
