@@ -53,7 +53,7 @@
             background-image: var(--bg-image);
             background-size: cover;
             background-position: center;
-            filter: blur(6px);
+            filter: blur(3px);
             opacity: 0;
             transition: opacity 2.5s ease-in-out;
         }
@@ -65,6 +65,18 @@
             opacity: 0;
         }
         .bg.active { opacity: 1; }
+        /* Fixed scrim behind the footer so its text stays readable on any artwork. */
+        body::after {
+            content: "";
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 7rem;
+            z-index: -1;
+            pointer-events: none;
+            background: linear-gradient(to top, rgba(6, 26, 48, 0.6), rgba(6, 26, 48, 0));
+        }
         main {
             flex: 1;
             display: flex;
