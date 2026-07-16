@@ -11,5 +11,18 @@
         "C3:95:7E:DB:16:42:C9:EA:14:9B:81:4F:66:3A:B9:CF:6D:91:E3:C1:49:B8:B3:36:1F:4A:AB:CC:F5:3B:C3:21"
       ]
     }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tier9.abw",
+      "sha256_cert_fingerprints": [
+        "7F:7A:84:87:70:C3:00:0C:6F:01:8A:FF:00:93:BD:DF:61:7D:40:57:53:EB:BA:23:85:CE:33:D0:73:DD:7C:F7"
+      ]
+    }
   }
 ]
