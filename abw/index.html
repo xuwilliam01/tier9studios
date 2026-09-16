@@ -116,6 +116,12 @@
             line-height: 1.15;
             letter-spacing: -0.01em;
         }
+        .kicker {
+            margin: 0 0 0.5rem;
+            color: var(--ink-dim);
+            font-size: 1.02rem;
+            font-weight: 500;
+        }
         .tagline {
             margin: 0 0 2rem;
             color: var(--ink-dim);
@@ -206,6 +212,12 @@
             text-decoration: none;
         }
         footer a:hover { text-decoration: underline; }
+        /* This card carries more text than the home page; tighten vertical rhythm so it fits a 900px-tall window. */
+        .glass { padding-top: 2.25rem; }
+        .logo { width: min(240px, 60vw); margin-bottom: 1.25rem; }
+        .tagline { margin-bottom: 1.25rem; }
+        .copy { margin-bottom: 1.5rem; }
+        .hiring { margin-top: 1.5rem; }
         @media (max-width: 480px) {
             .badge { height: 42px; }
             .badge .big { font-size: 1rem; }
@@ -223,6 +235,7 @@
                 margin-bottom: clamp(1rem, 2.5vh, 1.5rem);
             }
             h1 { font-size: clamp(1.3rem, 5.5vw, 1.65rem); }
+            .kicker { font-size: clamp(0.9rem, 3.8vw, 0.98rem); }
             .tagline {
                 margin-bottom: clamp(1.1rem, 3vh, 1.5rem);
                 font-size: clamp(0.9rem, 3.8vw, 0.98rem);
@@ -311,10 +324,10 @@
     <main>
         <div class="glass">
             <img class="logo" src="/assets/logo.png" alt="Tier 9 Game Studios" width="900" height="648"/>
-            <h1>Auto Battles World</h1>
-            <p class="tagline">An idle auto-battler RPG. Your heroes fight, loot, and level up on their own &mdash; even while you&rsquo;re away.</p>
+            <p class="kicker">You seem to have stumbled upon&hellip;</p>
+            <h1>our upcoming project Auto Battles World!</h1>
+            <p class="tagline">An idle auto-battler RPG, now in early access on Google Play. Your heroes fight, loot, and level up on their own &mdash; even while you&rsquo;re away.</p>
             <div class="copy">
-                <p>The next game from the makers of Auto Battles Online, now in early access on Google Play while we finish it.</p>
                 <p>Sign in with your Google account, or another supported provider, to save your progress and restore it on a new device. We use only basic account information (name, email address, and profile picture) for this. See our <a href="/privacy/">Privacy Policy</a>.</p>
             </div>
             <div class="badges">
