@@ -4,19 +4,21 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Auto Battles World &mdash; Tier 9 Game Studios</title>
-    <meta name="description" content="Auto Battles World, an idle auto-battler RPG from Tier 9 Game Studios, currently in early access."/>
+    <meta name="description" content="Auto Battles World, an idle auto-battler RPG from Tier 9 Game Studios, now in early access on Google Play."/>
     <meta name="robots" content="noindex"/>
+    <meta property="og:title" content="Auto Battles World"/>
+    <meta property="og:description" content="An idle auto-battler RPG from Tier 9 Game Studios, now in early access on Google Play."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://www.tier9studios.com/abw/"/>
+    <meta property="og:image" content="https://www.tier9studios.com/assets/bg.jpg"/>
+    <meta name="theme-color" content="#8ed0ef"/>
+    <link rel="icon" type="image/png" href="/assets/logo.png"/>
     <style>
         :root {
-            --bg: #f6f7f9;
-            --panel: #ffffff;
-            --panel-2: #eef0f3;
-            --border: #e6e7eb;
             --ink: #1a1c23;
-            --ink-dim: #6f7380;
+            --ink-dim: #3d414c;
             --accent: #e8434f;
-            --accent-2: #e8434f;
-            --accent-deep: #c9333f;
+            --blurple: #5865f2;
         }
         @font-face {
             font-family: "Ioskeley Mono";
@@ -31,117 +33,319 @@
             font-display: swap;
         }
         * { box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
             margin: 0;
-            padding: 0;
-            background: var(--bg);
+            background: #8ed0ef;
             color: var(--ink);
             font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            min-height: 100dvh;
         }
-        .wrap {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 2.5em 1.25em 1em;
+        .bg {
+            position: fixed;
+            inset: -24px; /* oversize so the blur doesn't show bright edges */
+            z-index: -1;
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            filter: blur(3px);
+            opacity: 0;
+            transition: opacity 2.5s ease-in-out;
         }
-        .studio {
+        .bg::after {
+            content: "";
+            position: absolute;
+            inset: 24px;
+            background: var(--bg-image) center / 140% auto no-repeat;
+            opacity: 0;
+        }
+        .bg.active { opacity: 1; }
+        /* Fixed scrim behind the footer so its text stays readable on any artwork. */
+        body::after {
+            content: "";
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 7rem;
+            z-index: -1;
+            pointer-events: none;
+            background: linear-gradient(to top, rgba(6, 26, 48, 0.6), rgba(6, 26, 48, 0));
+        }
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1.25rem;
+        }
+        .glass {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            max-width: 34rem;
+            padding: 3rem 2.5rem 2.5rem;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.66);
+            -webkit-backdrop-filter: blur(16px) saturate(1.3);
+            backdrop-filter: blur(16px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            box-shadow: 0 16px 48px rgba(10, 45, 80, 0.22);
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .glass { background: rgba(255, 255, 255, 0.93); }
+        }
+        .logo {
+            width: min(300px, 68vw);
+            height: auto;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            margin: 0 0 0.4rem;
             font-family: "Ioskeley Mono", ui-monospace, monospace;
-            font-size: 0.85em;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin: 0 0 1.5em;
+            font-size: clamp(1.5rem, 4.5vw, 1.9rem);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
         }
-        .studio a {
+        .tagline {
+            margin: 0 0 2rem;
             color: var(--ink-dim);
+            font-size: 1.02rem;
+            font-weight: 500;
+            max-width: 28rem;
+        }
+        .copy {
+            margin: 0 0 1.75rem;
+            color: var(--ink-dim);
+            font-size: 0.95rem;
+            max-width: 30rem;
+        }
+        .copy p { margin: 0 0 0.75rem; }
+        .copy p:last-child { margin-bottom: 0; }
+        .copy a { color: var(--accent); }
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            width: 10.25rem;
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #ffffff;
             text-decoration: none;
         }
-        .studio a:hover { color: var(--accent-deep); }
-        h1 {
-            font-family: "Ioskeley Mono", ui-monospace, monospace;
-            font-weight: 600;
-            font-size: 1.8em;
-            margin: 0 0 0.25em;
+        .badge-store { background: #000000; }
+        .badge-discord { background: var(--blurple); }
+        .badge svg {
+            width: 26px;
+            height: 26px;
+            flex: none;
+            fill: currentColor;
         }
-        .subtitle {
+        .badge .lines {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.15;
+        }
+        .badge .small {
+            font-size: 0.6rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .badge .big {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .hiring {
+            margin-top: 2rem;
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            border: 1px solid var(--ink-dim);
+            border-radius: 999px;
             color: var(--ink-dim);
-            margin: 0 0 2em;
-        }
-        article {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2.75em 3em;
-            box-shadow: 0 2px 12px rgba(26, 28, 35, 0.06);
-        }
-        #content h3 {
             font-family: "Ioskeley Mono", ui-monospace, monospace;
+            font-size: 0.9rem;
             font-weight: 600;
-            font-size: 1.1em;
-            margin-top: 2.2em;
-            padding-bottom: 0.4em;
-            border-bottom: 1px solid var(--border);
+            text-decoration: none;
         }
-        #content h4 {
-            font-family: "Ioskeley Mono", ui-monospace, monospace;
-            font-weight: 600;
-            font-size: 0.95em;
-            margin-top: 1.6em;
-        }
-        #content p, #content li {
-            line-height: 1.65;
-        }
-        #content ul, #content ol {
-            padding-left: 1.5em;
-            margin: 0.75em 0;
-        }
-        #content a { color: var(--accent-deep); }
-        #content figure.table {
-            margin: 1.25em 0;
-            overflow-x: auto;
-        }
-        #content table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.92em;
-        }
-        #content th {
-            background: var(--panel-2);
-            text-align: left;
-        }
-        #content th, #content td {
-            border: 1px solid var(--border);
-            padding: 0.6em 0.8em;
-            vertical-align: top;
+        .hiring:hover {
+            color: var(--accent);
+            border-color: var(--accent);
         }
         footer {
-            text-align: center;
-            padding: 1.5em;
-            font-size: 0.85em;
-            color: var(--ink-dim);
+            padding: 0 1.5rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.3rem 1.25rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 0 1px 6px rgba(5, 35, 65, 0.45);
         }
-        footer a { color: var(--ink-dim); }
-        @media (max-width: 640px) {
-            .wrap { padding: 1.5em 0.75em 0.5em; }
-            article { padding: 1.5em 1.25em; border-radius: 12px; }
+        footer a {
+            color: rgba(255, 255, 255, 0.92);
+            text-decoration: none;
+        }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 480px) {
+            .badge { height: 42px; }
+            .badge .big { font-size: 1rem; }
+        }
+        @media (max-aspect-ratio: 3 / 4) {
+            .bg::after { opacity: 0.34; }
+            main { padding: clamp(1rem, 3.5vh, 2rem) 0; }
+            .glass {
+                width: min(84vw, 30rem);
+                padding: clamp(1.4rem, 3.5vh, 2.25rem) clamp(0.9rem, 4vw, 1.5rem) clamp(1.2rem, 3vh, 1.75rem);
+                border-radius: clamp(16px, 5vw, 22px);
+            }
+            .logo {
+                width: clamp(10rem, 55vw, 14rem);
+                margin-bottom: clamp(1rem, 2.5vh, 1.5rem);
+            }
+            h1 { font-size: clamp(1.3rem, 5.5vw, 1.65rem); }
+            .tagline {
+                margin-bottom: clamp(1.1rem, 3vh, 1.5rem);
+                font-size: clamp(0.9rem, 3.8vw, 0.98rem);
+            }
+            .badges {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                width: 100%;
+                /* Cap at two badge widths + gap so badges never stretch wider than designed. */
+                max-width: calc(20.5rem + 0.55rem);
+                gap: 0.55rem;
+            }
+            .badge {
+                width: 100%;
+                height: clamp(38px, 10.5vw, 44px);
+                gap: 0.4rem;
+            }
+            .badge-discord {
+                grid-column: 1 / -1;
+                justify-self: center;
+                width: calc(50% - 0.275rem);
+            }
+            .badge svg { width: 22px; height: 22px; }
+            .badge .small { font-size: 0.52rem; }
+            .badge .big { font-size: 0.95rem; }
+            .copy { font-size: clamp(0.85rem, 3.6vw, 0.92rem); margin-bottom: clamp(1rem, 2.5vh, 1.4rem); }
+            /* Single badge on this page: centre it instead of the two-column grid. */
+            .badges { grid-template-columns: minmax(0, 10.25rem); justify-content: center; }
+            .hiring {
+                margin-top: clamp(1.1rem, 3vh, 1.5rem);
+                font-size: 0.84rem;
+            }
+            footer {
+                padding: 0 1rem max(1rem, env(safe-area-inset-bottom));
+                font-size: 0.8rem;
+            }
+        }
+        @media (max-width: 350px) and (max-aspect-ratio: 3 / 4) {
+            .glass { width: 90vw; }
+            .badges {
+                grid-template-columns: minmax(0, 10rem);
+                justify-content: center;
+            }
+            .badge-discord {
+                grid-column: auto;
+                width: 100%;
+            }
+        }
+        @media (max-height: 600px) and (min-aspect-ratio: 4 / 3) {
+            main { padding: 0.75rem 1rem; }
+            .glass { max-width: 34rem; padding: 1rem 1.5rem 0.9rem; }
+            .logo {
+                width: min(150px, 22vw);
+                margin-bottom: 0.5rem;
+            }
+            h1 { font-size: 1.25rem; }
+            .tagline {
+                margin-bottom: 0.75rem;
+                font-size: 0.85rem;
+            }
+            .badges { gap: 0.5rem; }
+            .badge {
+                width: 9.5rem;
+                height: 36px;
+                gap: 0.4rem;
+            }
+            .badge svg { width: 21px; height: 21px; }
+            .badge .small { font-size: 0.5rem; }
+            .badge .big { font-size: 0.9rem; }
+            .hiring {
+                margin-top: 0.75rem;
+                padding: 0.2rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            footer {
+                padding-bottom: 0.5rem;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="wrap">
-        <p class="studio"><a href="/">&larr; Tier 9 Game Studios</a></p>
-        <h1>Auto Battles World</h1>
-        <p class="subtitle">An idle auto-battler RPG from Tier 9 Game Studios, currently in early access.</p>
-        <article>
-            <p>Auto Battles World is the next game from Tier 9 Game Studios, the makers of Auto Battles Online. Your heroes fight, loot, and level up on their own, and progress continues while you are away.</p>
-            <p>The game is in early access with a limited group of players while we finish it. Public store listings are not available yet.</p>
-            <h2>Your account and data</h2>
-            <p>Auto Battles World lets you sign in with your Google account, or another supported sign-in provider, to save your progress and restore it on a new device. We use only basic account information (your name, email address, and profile picture) for this purpose. How we collect, use, and protect your information is described in our <a href="/privacy/">Privacy Policy</a>.</p>
-            <h2>Contact</h2>
-            <p>Questions about the game or your data: <a href="mailto:michael@tier9studios.com">michael@tier9studios.com</a>.</p>
-        </article>
-    </div>
+    <div class="bg active" style="--bg-image: url('/assets/bg.jpg')"></div>
+    <div class="bg" style="--bg-image: url('/assets/bg-arena.jpg')"></div>
+    <div class="bg" style="--bg-image: url('/assets/bg-dungeon.jpg')"></div>
+    <main>
+        <div class="glass">
+            <img class="logo" src="/assets/logo.png" alt="Tier 9 Game Studios" width="900" height="648"/>
+            <h1>Auto Battles World</h1>
+            <p class="tagline">An idle auto-battler RPG. Your heroes fight, loot, and level up on their own &mdash; even while you&rsquo;re away.</p>
+            <div class="copy">
+                <p>The next game from the makers of Auto Battles Online, now in early access on Google Play while we finish it.</p>
+                <p>Sign in with your Google account, or another supported provider, to save your progress and restore it on a new device. We use only basic account information (name, email address, and profile picture) for this. See our <a href="/privacy/">Privacy Policy</a>.</p>
+            </div>
+            <div class="badges">
+                <a class="badge badge-store" href="https://play.google.com/store/apps/details?id=com.tier9.abw">
+                    <svg viewBox="30 336.7 120.9 129.2" aria-hidden="true"><path fill="#ffd400" d="M119.2,421.2c15.3-8.4,27-14.8,28-15.3c3.2-1.7,6.5-6.2,0-9.7c-2.1-1.1-13.4-7.3-28-15.3l-20.1,20.2L119.2,421.2z"/><path fill="#ff3333" d="M99.1,401.1l-64.2,64.7c1.5,0.2,3.2-0.2,5.2-1.3c4.2-2.3,48.8-26.7,79.1-43.3L99.1,401.1L99.1,401.1z"/><path fill="#48ff48" d="M99.1,401.1l20.1-20.2c0,0-74.6-40.7-79.1-43.1c-1.7-1-3.6-1.3-5.3-1L99.1,401.1z"/><path fill="#3bccff" d="M99.1,401.1l-64.3-64.3c-2.6,0.6-4.8,2.9-4.8,7.6c0,7.5,0,107.5,0,113.8c0,4.3,1.7,7.4,4.9,7.7L99.1,401.1z"/></svg>
+                    <span class="lines"><span class="small">Get it on</span><span class="big">Google Play</span></span>
+                </a>
+            </div>
+            <a class="hiring" href="/">&larr; Tier 9 Game Studios</a>
+        </div>
+    </main>
     <footer>
-        <p>&copy; Tier 9 Game Studios Ltd. &bull; <a href="/">Home</a> &bull; <a href="/privacy/">Privacy</a></p>
+        <span>&copy; Tier 9 Game Studios Ltd.</span>
+        <a href="/privacy/">Privacy</a>
+        <a href="/">Home</a>
     </footer>
+    <script>
+        // Slow crossfade between background artworks. A pure opacity dissolve,
+        // so it stays on even when the OS requests reduced motion.
+        (function () {
+            var layers = document.querySelectorAll(".bg");
+            if (layers.length < 2) return;
+            var i = 0;
+            setInterval(function () {
+                var prev = layers[i];
+                i = (i + 1) % layers.length;
+                layers[i].classList.add("active");
+                // Drop the old layer only after the new one is fully opaque.
+                setTimeout(function () { prev.classList.remove("active"); }, 2600);
+            }, 9000);
+        })();
+    </script>
 </body>
 </html>
