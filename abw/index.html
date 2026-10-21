@@ -13,7 +13,7 @@
     <meta property="og:image" content="https://www.tier9studios.com/assets/bg.jpg"/>
     <meta name="theme-color" content="#29d5ef"/>
     <link rel="icon" type="image/png" href="/assets/logo.png"/>
-    <link rel="preload" href="/assets/abw/brotato-hop.webp" as="image" type="image/webp"/>
+    <link rel="preload" href="/assets/abw/biomes.json" as="fetch" crossorigin/>
     <style>
         :root {
             --ink: #1a1c23;
@@ -21,10 +21,8 @@
             --accent: #e8434f;
             --blurple: #5865f2;
             --steam: #171a21;
-            /* One background tile is 1382 x 1019 px; the scene is one viewport tall, so a tile is this wide. */
-            --tile: calc(100vh * 1382 / 1019);
-            /* Display height of one 128-px floor tile from the game's grassland tile sheet. */
-            --cell: clamp(48px, 8vh, 104px);
+            /* Display height of one 128-px floor tile. Monsters and props are drawn at their in-game size in these tiles. */
+            --cell: clamp(40px, 6.5vh, 88px);
         }
         @font-face {
             font-family: "Ioskeley Mono";
@@ -53,8 +51,9 @@
             min-height: 100vh;
             min-height: 100dvh;
         }
-        /* The W1 grassland battle background (Hillside prefab), anchored to the bottom of the screen.
-           100vh is the largest viewport height on mobile, so the scene never comes up short when the toolbar hides. */
+        /* One World 1 biome: its battle background layers, a floor of its tiles, props, and monsters.
+           The scene is one viewport tall and anchored to the bottom; 100vh is the largest viewport height on mobile,
+           so it never comes up short when the toolbar hides. A new scene fades in over the old one. */
         .scene {
             position: fixed;
             left: 0;
@@ -63,7 +62,10 @@
             height: 100vh;
             z-index: -1;
             overflow: hidden;
+            opacity: 0;
+            transition: opacity 1.2s ease;
         }
+        .scene.shown { opacity: 1; }
         .layer {
             position: absolute;
             top: 0;
@@ -71,39 +73,23 @@
             left: 0;
             width: 100%;
             background-repeat: repeat-x;
-            background-size: auto 100%;
         }
-        .sky { background-image: url("/assets/abw/sky.webp"); }
-        .land { background-image: url("/assets/abw/land.webp"); }
-        /* The clouds drift right, as they do in the game: one tile width per loop. */
-        .clouds {
-            left: calc(-1 * var(--tile));
-            width: calc(100% + var(--tile));
-            background-image: url("/assets/abw/clouds.webp");
-            animation: drift 110s linear infinite;
-            will-change: transform;
-        }
-        @keyframes drift {
-            to { transform: translateX(var(--tile)); }
-        }
-        /* The ground: a grass-topped row of W1 grassland tiles over dirt (one 192 x 512 px column per repeat). */
         .floor {
             position: absolute;
             left: 0;
             right: 0;
             bottom: 0;
             height: calc(var(--cell) * 2.4);
-            background: url("/assets/abw/floor.webp") 0 0 / auto calc(var(--cell) * 4) repeat-x;
+            background-repeat: repeat-x;
+            background-size: auto calc(var(--cell) * 4);
         }
-        /* Each Brotato is one frame of an 8-frame hop sheet (176 x 343 px per frame). Its art faces left. */
-        .brotato {
+        .prop, .monster {
             position: absolute;
             left: 0;
             bottom: 0;
-            background: url("/assets/abw/brotato-hop.webp") 0 0 / 800% 100% no-repeat;
-            transform-origin: 50% 100%;
-            will-change: transform;
+            background-repeat: no-repeat;
         }
+        .monster { will-change: transform; }
         /* Fixed scrim behind the footer so its text stays readable on any artwork. */
         body::after {
             content: "";
@@ -121,8 +107,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Keep the floor and the Brotatos on it clear of the card: 2.4 tiles of floor plus about 1 tile of Brotato. */
-            padding: 2.5rem 1.25rem calc(var(--cell) * 3.4);
+            /* Keep the floor and the monsters on it clear of the card: 2.4 tiles of floor plus about 2 tiles of monster. */
+            padding: 2.5rem 1.25rem calc(var(--cell) * 4.4);
         }
         .glass {
             display: flex;
@@ -252,7 +238,7 @@
             .badge .big { font-size: 1rem; }
         }
         @media (max-aspect-ratio: 3 / 4) {
-            main { padding: clamp(1rem, 3.5vh, 2rem) 0 calc(var(--cell) * 3.4); }
+            main { padding: clamp(1rem, 3.5vh, 2rem) 0 calc(var(--cell) * 4.4); }
             .glass {
                 width: min(84vw, 30rem);
                 padding: clamp(1.4rem, 3.5vh, 2.25rem) clamp(0.9rem, 4vw, 1.5rem) clamp(1.2rem, 3vh, 1.75rem);
@@ -343,13 +329,6 @@
     </style>
 </head>
 <body>
-    <div class="scene" aria-hidden="true">
-        <div class="layer sky"></div>
-        <div class="layer clouds"></div>
-        <div class="layer land"></div>
-        <div class="floor"></div>
-        <div class="layer critters"></div>
-    </div>
     <main>
         <div class="glass">
             <img class="logo" src="/assets/logo.png" alt="Tier 9 Game Studios" width="900" height="648"/>
@@ -375,76 +354,235 @@
         <a href="/">Home</a>
     </footer>
     <script>
-        // Brotatos hop across the screen on the grass line of the floor. Each one keeps its direction,
-        // rests briefly between hops, and wraps to the other side when it hops off an edge.
+        // A live World 1 biome behind the card. /assets/abw/biomes.json lists five biomes, each with its battle background
+        // layers, floor, props and monsters, all cut from the game. Every load and every 30 s shows the next biome
+        // from a shuffled bag kept in localStorage, so no biome repeats until all five have been shown.
         (function () {
-            // Hop timing from the game: monsterSpriteResolverInfos row 1020 (brotato), walkFrames 8 at walkFps 6.
-            var FRAMES = 8, FPS = 6, ASPECT = 176 / 343;
-            var field = document.querySelector(".critters");
-            var floor = document.querySelector(".floor");
-            var critters = [];
+            var BAG_KEY = "t9.abw.biomeBag", LAST_KEY = "t9.abw.lastBiome";
+            var ROTATE_MS = 30000, FADE_MS = 1200;
+            var biomes = [], current = null, lastWidth = window.innerWidth;
 
             function rand(a, b) { return a + Math.random() * (b - a); }
-
-            function spawn() {
-                field.textContent = "";
-                critters = [];
-                var w = field.clientWidth;
-                var floorH = floor.offsetHeight, cell = floorH / 2.4;
-                var count = Math.max(3, Math.min(8, Math.round(w / 240)));
-                for (var i = 0; i < count; i++) {
-                    // Feet land in the grass band of the top tile row, between 45% and 65% of a tile down.
-                    var sink = rand(0.45, 0.65);
-                    var size = cell * rand(1.9, 2.2);
-                    var el = document.createElement("div");
-                    el.className = "brotato";
-                    el.style.height = size + "px";
-                    el.style.width = size * ASPECT + "px";
-                    // Lower feet are nearer the viewer, so they draw in front.
-                    el.style.zIndex = String(Math.round(sink * 100));
-                    var c = {
-                        el: el,
-                        w: size * ASPECT,
-                        y: -(floorH - cell * sink),
-                        // Spread them out across the width so they do not start in a clump.
-                        x: (i + rand(0, 0.8)) * w / count,
-                        dir: Math.random() < 0.5 ? -1 : 1,
-                        frame: 0,
-                        clock: 0,
-                        wait: rand(0, 1),
-                        stride: size * 0.55
-                    };
-                    field.appendChild(el);
-                    critters.push(c);
-                    draw(c);
+            function div(cls, parent) {
+                var d = document.createElement("div");
+                d.className = cls;
+                if (parent) parent.appendChild(d);
+                return d;
+            }
+            function url(f) { return 'url("' + f + '")'; }
+            function shuffle(a) {
+                for (var i = a.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1)), t = a[i];
+                    a[i] = a[j];
+                    a[j] = t;
                 }
+                return a;
+            }
+            function weighted(items) {
+                var total = 0, i;
+                for (i = 0; i < items.length; i++) total += items[i].weight;
+                var r = Math.random() * total;
+                for (i = 0; i < items.length; i++) if ((r -= items[i].weight) < 0) return items[i];
+                return items[items.length - 1];
+            }
+            // Private browsing can refuse storage; the rotation still works for the current visit.
+            function load(key, fallback) {
+                try { var v = JSON.parse(localStorage.getItem(key)); return v == null ? fallback : v; } catch (e) { return fallback; }
+            }
+            function save(key, value) {
+                try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* keep going without persistence */ }
             }
 
-            function draw(c) {
-                c.el.style.backgroundPosition = (c.frame * 100 / (FRAMES - 1)) + "% 0";
-                // The art faces left, so mirror it when the Brotato heads right.
-                c.el.style.transform = "translate3d(" + c.x + "px," + c.y + "px,0) scaleX(" + (-c.dir) + ")";
+            // Take the next biome from the bag. A new bag never starts with the biome just shown.
+            function nextBiome() {
+                var ids = biomes.map(function (b) { return b.id; });
+                var bag = load(BAG_KEY, []).filter(function (id) { return ids.indexOf(id) >= 0; });
+                var lastId = load(LAST_KEY, null);
+                if (!bag.length) {
+                    bag = shuffle(ids.slice());
+                    if (bag.length > 1 && bag[0] === lastId) bag.push(bag.shift());
+                }
+                var id = bag.shift();
+                save(BAG_KEY, bag);
+                save(LAST_KEY, id);
+                return biomes[ids.indexOf(id)];
             }
 
-            function step(c, dt, w) {
-                if (c.wait > 0) {
-                    c.wait -= dt;
+            // Background layers are tiles one scene height tall, so every size below is in vh.
+            function addLayer(scene, l) {
+                var d = div("layer", scene), w = l.w * 100;
+                d.style.backgroundImage = url(l.file);
+                if (l.role === "anim") {
+                    // An animated band: a vertical sheet of frames for one strip of the background.
+                    var sheet = l.h * l.frames * 100;
+                    d.style.top = l.top * 100 + "vh";
+                    d.style.bottom = "auto";
+                    d.style.height = l.h * 100 + "vh";
+                    d.style.backgroundSize = w + "vh " + sheet + "vh";
+                    d.animate([{ backgroundPosition: "0 0" }, { backgroundPosition: "0 -" + sheet + "vh" }],
+                        { duration: l.frames / l.fps * 1000, iterations: Infinity, easing: "steps(" + l.frames + ")" });
                     return;
                 }
-                c.clock += dt;
-                var f = Math.min(FRAMES - 1, Math.floor(c.clock * FPS));
-                // Move only while the feet are off the ground (frames 2 to 6 of the hop).
-                if (f >= 2 && f <= 6) c.x += c.dir * c.stride * FPS / 5 * dt;
-                if (c.dir > 0 && c.x > w) c.x = -c.w;
-                if (c.dir < 0 && c.x < -c.w) c.x = w;
-                c.frame = f;
-                if (c.clock * FPS >= FRAMES) {
-                    c.frame = 0;
-                    c.clock = 0;
-                    // Mostly a short beat between hops; now and then a longer breather.
-                    c.wait = Math.random() < 0.15 ? rand(0.8, 2) : rand(0.05, 0.35);
+                d.style.backgroundSize = w + "vh 100%";
+                if (l.role === "drift") {
+                    // Auto-scrolling clouds and fog: slide one tile width per loop, at the game's speed.
+                    d.style.left = -w + "vh";
+                    d.style.width = "calc(100% + " + w + "vh)";
+                    var a = l.dir > 0 ? 0 : w, b = l.dir > 0 ? w : 0;
+                    d.animate([{ transform: "translateX(" + a + "vh)" }, { transform: "translateX(" + b + "vh)" }],
+                        { duration: l.seconds * 1000, iterations: Infinity });
                 }
-                draw(c);
+            }
+
+            function build(b) {
+                var s = { biome: b, el: div("scene"), critters: [] };
+                s.el.setAttribute("aria-hidden", "true");
+                b.layers.forEach(function (l) { addLayer(s.el, l); });
+                // Bushes and trees stand behind the floor, so its top tile row covers their base.
+                s.back = div("layer", s.el);
+                s.floor = div("floor", s.el);
+                s.floor.style.backgroundImage = url(b.floor);
+                s.props = div("layer", s.el);
+                s.crew = div("layer", s.el);
+                return s;
+            }
+
+            // Props stand on the floor's top edge, sunk by their most common in-game depth, at their in-game size.
+            // Back-row props (bushes, trees) and front props are scattered as two separate rows.
+            function placeProps(s) {
+                var decor = s.biome.decor;
+                placeRow(s, s.back, decor.filter(function (p) { return p.back; }), 1, 4);
+                placeRow(s, s.props, decor.filter(function (p) { return !p.back; }), 1.5, 5);
+            }
+
+            function placeRow(s, layer, items, minGap, maxGap) {
+                layer.textContent = "";
+                if (!items.length) return;
+                var w = layer.clientWidth, floorH = s.floor.offsetHeight, cell = floorH / 2.4;
+                var x = rand(-1, 1) * cell;
+                while (x < w) {
+                    var p = weighted(items), pw = p.w * cell, ph = p.h * cell;
+                    var d = div("prop", layer);
+                    d.style.width = pw + "px";
+                    d.style.height = ph + "px";
+                    d.style.backgroundImage = url(p.file);
+                    d.style.backgroundSize = p.frames * pw + "px " + ph + "px";
+                    var flip = Math.random() < p.flip ? " scaleX(-1)" : "";
+                    d.style.transform = "translate(" + x + "px," + -(floorH - p.sink * cell) + "px)" + flip;
+                    if (p.frames > 1) {
+                        d.animate([{ backgroundPosition: "0 0" }, { backgroundPosition: -p.frames * pw + "px 0" }],
+                            { duration: p.frames / p.fps * 1000, iterations: Infinity, easing: "steps(" + p.frames + ")" });
+                    }
+                    x += pw + rand(minGap, maxGap) * cell;
+                }
+            }
+
+            // Three to eight monsters by screen width, cycling through the biome's picks so each one appears.
+            function spawnCrew(s) {
+                s.crew.textContent = "";
+                s.critters = [];
+                var w = s.crew.clientWidth, floorH = s.floor.offsetHeight;
+                var picks = shuffle(s.biome.monsters.slice());
+                var count = Math.max(3, Math.min(8, Math.round(w / 240)));
+                for (var i = 0; i < count; i++) {
+                    var k = {
+                        m: picks[i % picks.length],
+                        el: div("monster", s.crew),
+                        cell: floorH / 2.4,
+                        floorH: floorH,
+                        x: (i + rand(0, 0.8)) * w / count,
+                        dir: Math.random() < 0.5 ? -1 : 1,
+                        // Feet land inside the walkable band of the floor's top tile row.
+                        sink: rand(s.biome.feet[0], s.biome.feet[1])
+                    };
+                    // Lower feet are nearer the viewer, so they draw in front.
+                    k.el.style.zIndex = String(Math.round(k.sink * 100));
+                    setAnim(k, "walk", rand(2, 7));
+                    k.t = rand(0, 1);
+                    s.critters.push(k);
+                    draw(k);
+                }
+            }
+
+            function setAnim(k, name, seconds) {
+                var a = k.m[name];
+                k.anim = a;
+                k.state = name;
+                k.t = 0;
+                k.timer = seconds;
+                k.h = a.tiles * k.cell;
+                k.w = k.h * a.aspect;
+                k.el.style.width = k.w + "px";
+                k.el.style.height = k.h + "px";
+                k.el.style.backgroundImage = url(a.file);
+                k.el.style.backgroundSize = a.frames * 100 + "% 100%";
+                // Mirror around the sprite's pivot, so turning around does not shift it sideways.
+                k.el.style.transformOrigin = a.pivotX * 100 + "% 100%";
+            }
+
+            function draw(k) {
+                var a = k.anim, f = Math.floor(k.t * a.fps) % a.frames;
+                k.el.style.backgroundPosition = (a.frames > 1 ? f * 100 / (a.frames - 1) : 0) + "% 0";
+                // Each strip's bottom row is the lowest foot pixel of its frames: stand it on the path line.
+                // (The game's sprite pivot sits a little below the art and would leave a visible gap.)
+                var bottom = k.floorH - k.sink * k.cell;
+                var flip = k.dir === k.m.faces ? 1 : -1;
+                k.el.style.transform = "translate3d(" + (k.x - a.pivotX * k.w) + "px," + -bottom + "px,0) scaleX(" + flip + ")";
+            }
+
+            function step(k, dt, w) {
+                var a = k.anim;
+                k.t += dt;
+                k.timer -= dt;
+                var f = Math.floor(k.t * a.fps) % a.frames;
+                if (k.state === "walk") {
+                    // movementSpeed is in thousandths of a world unit per second; one floor tile is 1.28 units tall.
+                    var speed = k.m.speed / 1000 * k.cell / 1.28;
+                    // A hopper only moves while airborne (frames 2 to 6), five frames out of its cycle.
+                    if (!k.m.hop) k.x += k.dir * speed * dt;
+                    else if (f >= 2 && f <= 6) k.x += k.dir * speed * a.frames / 5 * dt;
+                    if (k.dir > 0 && k.x - k.w > w) k.x = -k.w;
+                    if (k.dir < 0 && k.x + k.w < 0) k.x = w + k.w;
+                    // Stop only at the start of a cycle, so nobody freezes in mid-air.
+                    if (k.timer <= 0 && f === 0) setAnim(k, "idle", rand(1.2, 3.5));
+                } else if (k.timer <= 0) {
+                    if (Math.random() < 0.3) k.dir = -k.dir;
+                    setAnim(k, "walk", rand(3, 9));
+                }
+                draw(k);
+            }
+
+            function populate(s) {
+                placeProps(s);
+                spawnCrew(s);
+            }
+
+            // Wait (briefly) for the background and floor to decode, so a biome never fades in half-painted.
+            function ready(b) {
+                var files = b.layers.map(function (l) { return l.file; }).concat([b.floor]);
+                var loads = files.map(function (f) {
+                    var img = new Image();
+                    img.src = f;
+                    return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
+                });
+                return Promise.race([Promise.all(loads), new Promise(function (r) { setTimeout(r, 4000); })]);
+            }
+
+            function show(b) {
+                return ready(b).then(function () {
+                    var old = current, s = build(b);
+                    // After any older scene, so the new one fades in on top of it.
+                    document.body.insertBefore(s.el, document.querySelector("main"));
+                    populate(s);
+                    current = s;
+                    document.body.style.backgroundColor = b.top;
+                    requestAnimationFrame(function () { s.el.classList.add("shown"); });
+                    if (old) setTimeout(function () { old.el.remove(); }, FADE_MS + 100);
+                });
+            }
+
+            function rotate() {
+                show(nextBiome()).then(function () { setTimeout(rotate, ROTATE_MS); });
             }
 
             var last = 0;
@@ -452,21 +590,29 @@
                 // Clamp the step so a background tab does not teleport everyone on return.
                 var dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
                 last = now;
-                var w = field.clientWidth;
-                for (var i = 0; i < critters.length; i++) step(critters[i], dt, w);
+                if (current) {
+                    var w = current.crew.clientWidth;
+                    for (var i = 0; i < current.critters.length; i++) step(current.critters[i], dt, w);
+                }
                 requestAnimationFrame(tick);
             }
 
-            // Respawn only when the width changes: mobile toolbars change the height on every scroll.
-            var resizeTimer, lastWidth = window.innerWidth;
+            // Re-lay props and monsters only when the width changes: mobile toolbars change the height on every scroll.
+            var resizeTimer;
             window.addEventListener("resize", function () {
                 if (window.innerWidth === lastWidth) return;
                 lastWidth = window.innerWidth;
                 clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(spawn, 200);
+                resizeTimer = setTimeout(function () { if (current) populate(current); }, 200);
             });
-            spawn();
-            requestAnimationFrame(tick);
+
+            fetch("/assets/abw/biomes.json")
+                .then(function (r) { return r.json(); })
+                .then(function (list) {
+                    biomes = list;
+                    rotate();
+                    requestAnimationFrame(tick);
+                });
         })();
     </script>
 </body>
