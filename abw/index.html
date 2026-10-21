@@ -11,7 +11,7 @@
     <meta property="og:type" content="website"/>
     <meta property="og:url" content="https://www.tier9studios.com/abw/"/>
     <meta property="og:image" content="https://www.tier9studios.com/assets/bg.jpg"/>
-    <meta name="theme-color" content="#29d5ef"/>
+    <meta name="theme-color" content="#000000"/>
     <link rel="icon" type="image/png" href="/assets/logo.png"/>
     <link rel="preload" href="/assets/abw/biomes.json" as="fetch" crossorigin/>
     <style>
@@ -40,7 +40,8 @@
         html, body { height: 100%; }
         body {
             margin: 0;
-            background: #29d5ef;
+            /* Black until the first biome has loaded, so the page fades in from black instead of flashing a color. */
+            background: #000000;
             color: var(--ink);
             font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
             font-size: 16px;
@@ -90,6 +91,13 @@
             background-repeat: no-repeat;
         }
         .monster { will-change: transform; }
+        /* A monster holds one sheet per animation, each with its image set once; a transition only swaps which is visible. */
+        .monster > div {
+            position: absolute;
+            inset: 0;
+            background-repeat: no-repeat;
+            visibility: hidden;
+        }
         /* Fixed scrim behind the footer so its text stays readable on any artwork. */
         body::after {
             content: "";
@@ -497,6 +505,7 @@
                     };
                     // Lower feet are nearer the viewer, so they draw in front.
                     k.el.style.zIndex = String(Math.round(k.sink * 100));
+                    k.sheets = { walk: sheet(k.el, k.m.walk), idle: sheet(k.el, k.m.idle) };
                     setAnim(k, "walk", rand(2, 7));
                     k.t = rand(0, 1);
                     s.critters.push(k);
@@ -504,8 +513,18 @@
                 }
             }
 
+            function sheet(parent, a) {
+                var d = div("", parent);
+                d.style.backgroundImage = url(a.file);
+                d.style.backgroundSize = a.frames * 100 + "% 100%";
+                return d;
+            }
+
+            // Switch animation without reloading anything: resize the box and show the other sheet in the same frame.
             function setAnim(k, name, seconds) {
                 var a = k.m[name];
+                if (k.state) k.sheets[k.state].style.visibility = "hidden";
+                k.sheets[name].style.visibility = "visible";
                 k.anim = a;
                 k.state = name;
                 k.t = 0;
@@ -514,15 +533,13 @@
                 k.w = k.h * a.aspect;
                 k.el.style.width = k.w + "px";
                 k.el.style.height = k.h + "px";
-                k.el.style.backgroundImage = url(a.file);
-                k.el.style.backgroundSize = a.frames * 100 + "% 100%";
                 // Mirror around the sprite's pivot, so turning around does not shift it sideways.
                 k.el.style.transformOrigin = a.pivotX * 100 + "% 100%";
             }
 
             function draw(k) {
                 var a = k.anim, f = Math.floor(k.t * a.fps) % a.frames;
-                k.el.style.backgroundPosition = (a.frames > 1 ? f * 100 / (a.frames - 1) : 0) + "% 0";
+                k.sheets[k.state].style.backgroundPosition = (a.frames > 1 ? f * 100 / (a.frames - 1) : 0) + "% 0";
                 // Each strip's bottom row is the lowest foot pixel of its frames: stand it on the path line.
                 // (The game's sprite pivot sits a little below the art and would leave a visible gap.)
                 var bottom = k.floorH - k.sink * k.cell;
@@ -557,12 +574,19 @@
                 spawnCrew(s);
             }
 
-            // Wait (briefly) for the background and floor to decode, so a biome never fades in half-painted.
+            // Wait (briefly) for every image of the biome to download and decode: background, floor, props, and both
+            // animations of every monster. Without this, a monster's idle sheet first loads at its first stop and the
+            // monster blinks out while it arrives. The decoded images are kept so the browser does not drop them.
+            var decoded = [];
             function ready(b) {
                 var files = b.layers.map(function (l) { return l.file; }).concat([b.floor]);
+                b.decor.forEach(function (p) { files.push(p.file); });
+                b.monsters.forEach(function (m) { files.push(m.walk.file, m.idle.file); });
+                decoded = [];
                 var loads = files.map(function (f) {
                     var img = new Image();
                     img.src = f;
+                    decoded.push(img);
                     return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
                 });
                 return Promise.race([Promise.all(loads), new Promise(function (r) { setTimeout(r, 4000); })]);
@@ -575,7 +599,6 @@
                     document.body.insertBefore(s.el, document.querySelector("main"));
                     populate(s);
                     current = s;
-                    document.body.style.backgroundColor = b.top;
                     requestAnimationFrame(function () { s.el.classList.add("shown"); });
                     if (old) setTimeout(function () { old.el.remove(); }, FADE_MS + 100);
                 });
