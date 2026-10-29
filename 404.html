@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page not found - Tier 9 Game Studios</title>
+    <script>
+        // App links under /abw/app open the game when it is installed. A visitor without the
+        // game lands here, so send them to the game's page with the query string kept.
+        if (/^\/abw\/app(\/|$)/.test(window.location.pathname)) {
+            window.location.replace("/abw/" + window.location.search);
+        }
+    </script>
+</head>
+<body>
+    <h1>Page not found</h1>
+    <p><a href="/">Go to the Tier 9 Game Studios home page</a></p>
+</body>
+</html>

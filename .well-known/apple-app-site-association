@@ -9,6 +9,19 @@
                   "comment": "Matches any URL with a path that starts with /abo/."
                }
              ]
+           },
+           {
+             "appIDs": [ "Y7562A93N5.com.tier9.abw" ],
+             "components": [
+               {
+                  "/": "/abw/app",
+                  "comment": "Matches the app root. The /abw page itself stays on the website."
+               },
+               {
+                  "/": "/abw/app/*",
+                  "comment": "Matches any URL with a path that starts with /abw/app/."
+               }
+             ]
            }
        ]
    }
