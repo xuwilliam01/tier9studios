@@ -21,7 +21,8 @@
       "namespace": "android_app",
       "package_name": "com.tier9.abw",
       "sha256_cert_fingerprints": [
-        "7F:7A:84:87:70:C3:00:0C:6F:01:8A:FF:00:93:BD:DF:61:7D:40:57:53:EB:BA:23:85:CE:33:D0:73:DD:7C:F7"
+        "7F:7A:84:87:70:C3:00:0C:6F:01:8A:FF:00:93:BD:DF:61:7D:40:57:53:EB:BA:23:85:CE:33:D0:73:DD:7C:F7",
+        "D4:61:7E:1A:28:8F:25:FE:A4:3B:68:EA:9A:C0:20:27:7E:CA:BF:CB:19:13:33:A6:97:A6:F3:10:A2:36:FD:AF"
       ]
     }
   }
