@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Return to 9999+ Weapons &mdash; Tier 9 Game Studios</title>
+    <meta name="robots" content="noindex"/>
+    <!-- The address of this page holds a one-time sign-in code, so no other site gets it as a referrer. -->
+    <meta name="referrer" content="no-referrer"/>
+    <meta name="theme-color" content="#000000"/>
+    <link rel="icon" type="image/png" href="/assets/logo.png"/>
+    <style>
+        @font-face {
+            font-family: "Ioskeley Mono";
+            src: url("/assets/fonts/IoskeleyMonoTerm-SemiBold.woff2") format("woff2");
+            font-weight: 600;
+            font-display: swap;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            padding: 24px;
+            background: #000000;
+            color: #ffffff;
+            font-family: "Ioskeley Mono", ui-monospace, monospace;
+            font-weight: 600;
+            text-align: center;
+        }
+        p { margin: 0; max-width: 28em; line-height: 1.5; }
+        a {
+            display: inline-block;
+            padding: 16px 28px;
+            border-radius: 12px;
+            background: #e8434f;
+            color: #ffffff;
+            font-size: 1.1rem;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!--
+        Sign in with Apple on Android. Apple sends the browser here with ?code=...&state=... after the
+        player signs in on Apple's page. Android opens the game directly when it can verify the app
+        link, and this page then never shows. When Android keeps the browser, the button below opens
+        the game with the same query string. Only the package com.t9s.abw can receive the intent.
+    -->
+    <p>Tap the button to go back to the game and finish signing in.</p>
+    <a id="back" href="/abw/">Return to 9999+ Weapons</a>
+    <script>
+        document.getElementById("back").href =
+            "intent://www.tier9studios.com/abw/app/apple/" + window.location.search +
+            "#Intent;scheme=https;package=com.t9s.abw;end";
+    </script>
+</body>
+</html>
