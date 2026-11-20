@@ -46,14 +46,21 @@
 </head>
 <body>
     <!--
-        Sign in with Apple on Android. Apple sends the browser here with ?code=...&state=... after the
-        player signs in on Apple's page. Android opens the game directly when it can verify the app
-        link, and this page then never shows. When Android keeps the browser, the button below opens
+        Sign in with Apple on Android and Windows. Apple sends the browser here with ?code=...&state=...
+        after the player signs in on Apple's page. On Windows the script below hands the code straight
+        to the game. Android opens the game directly when it can verify the app link, and this page
+        then never shows. When Android keeps the browser, the button below opens
         the game with the same query string. Only the package com.t9s.abw can receive the intent.
     -->
     <p>Tap the button to go back to the game and finish signing in.</p>
     <a id="back" href="/abw/">Return to 9999+ Weapons</a>
     <script>
+        // Sign in with Apple on Windows: the game listens on this PC and puts its port in the state, so the
+        // code goes straight back to it. Only 127.0.0.1 is ever a target.
+        var winPort = /^win-(\d{4,5})-/.exec(new URLSearchParams(window.location.search).get("state") || "");
+        if (winPort) {
+            window.location.replace("http://127.0.0.1:" + winPort[1] + "/apple/" + window.location.search);
+        }
         document.getElementById("back").href =
             "intent://www.tier9studios.com/abw/app/apple/" + window.location.search +
             "#Intent;scheme=https;package=com.t9s.abw;end";
